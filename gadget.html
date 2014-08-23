@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+	<ModulePrefs title="Submit to WS">
+		<Require feature="setprefs"/>
+		<Require feature="dynamic-height"/>
+		<Require feature="google.calendar-0.5"/>
+		<Require feature="google.calendar-0.5.read"/>
+	</ModulePrefs>
+	<UserPref name="sentEventsList" datatype="hidden" />
+	<UserPref name="unwantedDomains" datatype="hidden"  default_value="domain1.com,domain2.com"/>
+	<UserPref name="wsEndpoint" datatype="hidden"  default_value="https://requestb.in/13bcwvx1"/>
+	
+	<Content type="html">
+<![CDATA[    
+        
+	<div id="main" style="display:none">
+	  <div id="noEvent" >Select an event you own</div>
+		<div id="sendWS" style="display:none">
+			<label id="_sentToWSLabel">Sent to WS</label>
+			<br/>
+			<label>Select attendees:<label>
+			<br/>
+			<div style="overflow:auto; width: 150px;">
+				<select id="_attList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<button id="_reSendWSBtn">Re-Submit to WS</button>
+			<button id="_sendWSBtn">Submit to WS</button>
+		</div>
+	</div>
+	
+	<div id="loading" style="display: none;">Loading...</div>
+
+	<div id="errors" style="display: none; color: red;"></div>
+	 
+	<script src="https://www.google.com/jsapi"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+	<script>
+	
+	
+		var calendar = null;  // make our service object global for later
+		var selectedEvent = null;
+		  // Load the JS library and try to fetch data once it's ready
+		  function initGadget() {  
+			google.load('gdata', '1.x', {packages: ['calendar']});  // Save overhead, only load the calendar service
+
+			google.setOnLoadCallback(function () {
+			  calendar = new google.gdata.calendar.CalendarService('google-SendToWSGadget-v1.0');
+			  calendar.useOAuth('google');
+			  jQuery('#_sendWSBtn').click(callWS);
+			  jQuery('#_reSendWSBtn').click(callWS);
+			  
+			  //subscribes to events
+				google.calendar.read.subscribeToEvents(subscribeEventCallback);
+				jQuery('#main').show();
+			});
+		  }
+		  
+		  /*
+			Subscribe to Event view
+		  */
+			function subscribeEventCallback(calendarEvent) {
+				jQuery('#errors').html('');
+				selectedEvent = null;
+			  //if nothing is selected or I'm not an owner, nothing to be shown
+			  if (!calendarEvent || calendarEvent.accessLevel !== 'owner') {
+				// No event is onscreen.
+				jQuery('#noEvent').show();
+				jQuery('#sendWS').hide();
+			  } else {
+				selectedEvent = calendarEvent;
+				
+				// Get user preferences to know if an event has already been submitted
+				var prefs = new gadgets.Prefs();
+				var sentEventsList = prefs.getArray("sentEventsList");
+				if(!sentEventsList){ sentEventsList = [];}
+				var submitted = sentEventsList.indexOf(calendarEvent.id) >= 0;
+				jQuery('#noEvent').hide();
+				jQuery('#sendWS').show();
+				
+				if(submitted){
+					jQuery('#_sentToWSLabel').show();
+					jQuery('#_sendWSBtn').hide();
+					jQuery('#_reSendWSBtn').show();
+				}else{
+					jQuery('#_sentToWSLabel').hide();
+					jQuery('#_sendWSBtn').show();
+					jQuery('#_reSendWSBtn').hide();
+				}
+				
+				//populates attendees list
+				var slct = jQuery('#_attList');
+				slct.html('');
+				var unwantedDomains = prefs.getString('unwantedDomains');
+				if(!unwantedDomains) unwantedDomains = '';
+				var domanis = unwantedDomains.split(/\s*,\s*/);
+				if(!calendarEvent.attendees || !calendarEvent.attendees.length){
+					slct.append(jQuery('<option/>').text('No attendee').val(''));
+				}else{
+					for(var i = 0; i < calendarEvent.attendees.length; i++){
+						var att = calendarEvent.attendees[i];
+						var expludeAttendee = false;
+						
+						for(var d = 0; d < domanis.length;d++){ 
+							if(!domanis[d]){ continue;}
+							if(att.email.indexOf(domanis[d])>=0){ 
+								expludeAttendee = true;
+								break;
+							}
+						}
+						if(expludeAttendee){ continue; }
+						slct.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
+					}
+				}
+			  }
+			}
+			
+		  /*
+			Calls the external WS
+		  */
+		  function callWS(){
+			jQuery('#errors').html('');
+			if(!selectedEvent) { return; }
+			var selectedAttendees = []; 
+			$('#_attList :selected').each(function(i, selected){ 
+			  selectedAttendees[i] = $(selected).val(); 
+			});
+			var sendObj = {
+				event : selectedEvent,
+				attendees : selectedAttendees
+			};
+			var prefs = new gadgets.Prefs();
+			var wsEndpoint = prefs.getString("wsEndpoint");
+			makePOSTRequest(wsEndpoint, sendObj);
+			
+		  }
+		  /*
+			Makes a post request
+		  */
+			function makePOSTRequest(url, postdata) {
+			   var params = {};
+			   postdata = gadgets.json.stringify(postdata);
+			   params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
+			   params[gadgets.io.RequestParameters.POST_DATA]= postdata;
+			   jQuery('#loading').show();
+				jQuery('#main').hide();
+			   gadgets.io.makeRequest(url, response, params); 
+			};
+			/*
+				callback to handle the response
+			*/
+			function response(obj) {
+				jQuery('#loading').hide();
+				jQuery('#main').show();
+				if(obj.errors && obj.errors.length){
+					jQuery('#errors').show().html('Error occurred: '+gadgets.json.stringify(obj.errors));
+					return;
+				}
+			   //add the event as a subsmitted one in the preferences
+				var prefs = new gadgets.Prefs();
+				var sentEventsList = prefs.getString("sentEventsList");
+				if(!sentEventsList){ sentEventsList = '';}
+				if(sentEventsList.indexOf(selectedEvent.id) < 0){ sentEventsList+=selectedEvent.id; }
+				prefs.set("sentEventsList", sentEventsList);
+				jQuery('#_sentToWSLabel').show();
+				jQuery('#_sendWSBtn').hide();
+				jQuery('#_reSendWSBtn').show();
+				
+			};
+		  
+			//load gadget
+		  gadgets.util.registerOnLoadHandler(initGadget);
+	
+	 </script>
+]]>
+	</Content>
+	<OAuth>
+	  <Service name="google">
+		<Access url="https://www.google.com/accounts/OAuthGetAccessToken" method="GET" /> 
+		<Request url="https://www.google.com/accounts/OAuthGetRequestToken?scope=http://www.google.com/calendar/feeds/" method="GET" /> 
+		<Authorization url="https://www.google.com/accounts/OAuthAuthorizeToken?
+							oauth_callback=http://oauth.gmodules.com/gadgets/oauthcallback" /> 
+	  </Service>
+	</OAuth>
+	<!-- https://www.google.com/calendar/render?gadgeturl=https://tc30045003.herokuapp.com/gadget.html&nogadgetcache=1 -->
+</Module>
