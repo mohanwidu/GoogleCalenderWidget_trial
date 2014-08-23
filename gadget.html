@@ -52,6 +52,7 @@
 			  
 			  //subscribes to events
 				google.calendar.read.subscribeToEvents(subscribeEventCallback);
+				// hide the gadget initially
 				jQuery('#main').hide();
 			});
 		  }
@@ -68,7 +69,8 @@
 				jQuery('#noEvent').show();
 				jQuery('#sendWS').hide();
 			  } else {
-			  jQuery('#main').show();
+			  //show the gadget only to owner
+			    jQuery('#main').show();
 				selectedEvent = calendarEvent;
 				
 				// Get user preferences to know if an event has already been submitted
