@@ -11,7 +11,7 @@
 	<UserPref name="wsEndpoint" datatype="hidden"  default_value="https://requestb.in/13bcwvx1"/>
 	
 	<Content type="html">
-<![CDATA[    
+<[CDATA[    
         
 	<div id="main" style="display:none">
 	  <div id="noEvent" >Select an event you own test11</div>
@@ -53,7 +53,7 @@
 			  //subscribes to events
 				google.calendar.read.subscribeToEvents(subscribeEventCallback);
 				// hide the gadget initially
-				jQuery('#main').hide();
+				jQuery('#main').show();
 			});
 		  }
 		  
@@ -70,7 +70,7 @@
 				jQuery('#sendWS').hide();
 			  } else {
 			  //show the gadget only to owner
-			    jQuery('#main').show();
+			    //jQuery('#main').show();
 				selectedEvent = calendarEvent;
 				
 				// Get user preferences to know if an event has already been submitted
