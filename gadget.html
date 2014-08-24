@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-	<ModulePrefs title="Submit to WS check113">
+	<ModulePrefs title="Submit to WS tst">
 		<Require feature="setprefs"/>
 		<Require feature="dynamic-height"/>
 		<Require feature="google.calendar-0.5"/>
@@ -14,13 +14,25 @@
 <![CDATA[    
         
 	<div id="main" style="display:none">
-	  <div id="noEvent" >Select an event you own test13</div>
+	  <div id="noEvent" >Select an event you own tst</div>
 		<div id="sendWS" style="display:none">
 			<label id="_sentToWSLabel">Sent to WS</label>
 			<br/>
-			<label>Select attendees:<label>
+			<label id="_selectionOneDWLabel">Select Option-1:<label>
 			<br/>
-			<div style="overflow:auto; width: 150px;">
+			<div id="selectionOneDW" style="overflow:auto; width: 150px;">
+				<select id="_selOneList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<label id="_selectionTwoDWLabel">Select Option-2:<label>
+			<br/>
+			<div id="selectionTwoDW" style="overflow:auto; width: 150px;">
+				<select id="_selTwoList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<label id="_attendeeDWLabel">Select attendees:<label>
+			<br/>
+			<div id="attendeeDW" style="overflow:auto; width: 150px;">
 				<select id="_attList" multiple="multiple" size="3"></select>
 			</div>
 			<br/>
@@ -52,8 +64,7 @@
 			  
 			  //subscribes to events
 				google.calendar.read.subscribeToEvents(subscribeEventCallback);
-				// hide the gadget initially
-				//jQuery('#main').show();
+				jQuery('#main').show();
 			});
 		  }
 		  
@@ -69,8 +80,6 @@
 				jQuery('#noEvent').show();
 				jQuery('#sendWS').hide();
 			  } else {
-			  //show the gadget only to owner
-			    jQuery('#main').show();
 				selectedEvent = calendarEvent;
 				
 				// Get user preferences to know if an event has already been submitted
@@ -93,6 +102,7 @@
 				
 				//populates attendees list
 				var slct = jQuery('#_attList');
+				var extatt = 0;
 				slct.html('');
 				var unwantedDomains = prefs.getString('unwantedDomains');
 				if(!unwantedDomains) unwantedDomains = '';
@@ -113,8 +123,19 @@
 						}
 						if(expludeAttendee){ continue; }
 						slct.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
+						extatt++;
 					}
 				}
+				
+				//show attendee dropdown only for more than 1 external attendee
+				if (extatt > 1) {
+					jQuery('#_attendeeDWLabel').show();
+					jQuery('#attendeeDW').show();
+				else
+					jQuery('#_attendeeDWLabel').hide();
+					jQuery('#attendeeDW').hide();
+				}
+				
 			  }
 			}
 			
