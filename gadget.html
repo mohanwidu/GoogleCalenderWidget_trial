@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-	<ModulePrefs title="Submit to WS tst1">
+	<ModulePrefs title="Submit to WS-today">
 		<Require feature="setprefs"/>
 		<Require feature="dynamic-height"/>
 		<Require feature="google.calendar-0.5"/>
@@ -14,13 +14,13 @@
 <![CDATA[    
         
 	<div id="main" style="display:none">
-	  <div id="noEvent" >Select an event you own tst1</div>
+	  <div id="noEvent" >Select an event you own today</div>
 		<div id="sendWS" style="display:none">
 			<label id="_sentToWSLabel">Sent to WS</label>
 			<br/>
-			<label id="_attendeeDWLabel">Select attendees:</label>
+			<label>Select attendees:<label>
 			<br/>
-			<div id="attendeeDW" style="overflow:auto; width: 150px;">
+			<div style="overflow:auto; width: 150px;">
 				<select id="_attList" multiple="multiple" size="3"></select>
 			</div>
 			<br/>
@@ -90,7 +90,6 @@
 				
 				//populates attendees list
 				var slct = jQuery('#_attList');
-				var extatt = 0;
 				slct.html('');
 				var unwantedDomains = prefs.getString('unwantedDomains');
 				if(!unwantedDomains) unwantedDomains = '';
@@ -111,21 +110,8 @@
 						}
 						if(expludeAttendee){ continue; }
 						slct.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
-						extatt++;
 					}
 				}
-				
-				//show attendee dropdown only for more than 1 external attendee
-				if (extatt > 1) {
-					alert('exatt gt 1  ' + extatt );
-					jQuery('#_attendeeDWLabel').show();
-					jQuery('#attendeeDW').show();
-				else
-					alert('exatt le 1  '+ extatt);
-					jQuery('#_attendeeDWLabel').hide();
-					jQuery('#attendeeDW').hide();
-				}
-				
 			  }
 			}
 			
