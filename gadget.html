@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-	<ModulePrefs title="Submit to WS tst1">
+	<ModulePrefs title="X-Submit to WS">
 		<Require feature="setprefs"/>
 		<Require feature="dynamic-height"/>
 		<Require feature="google.calendar-0.5"/>
@@ -11,16 +11,16 @@
 	<UserPref name="wsEndpoint" datatype="hidden"  default_value="https://requestb.in/13bcwvx1"/>
 	
 	<Content type="html">
-<![CDATA[    
+[CDATA[    
         
 	<div id="main" style="display:none">
-	  <div id="noEvent" >Select an event you own tst1</div>
+	  <div id="noEvent" >Select an event you own tst-x</div>
 		<div id="sendWS" style="display:none">
 			<label id="_sentToWSLabel">Sent to WS</label>
 			<br/>
-			<label id="_attendeeDWLabel">Select attendees:</label>
+			<label>Select attendees:<label>
 			<br/>
-			<div id="attendeeDW" style="overflow:auto; width: 150px;">
+			<div style="overflow:auto; width: 150px;">
 				<select id="_attList" multiple="multiple" size="3"></select>
 			</div>
 			<br/>
@@ -52,7 +52,8 @@
 			  
 			  //subscribes to events
 				google.calendar.read.subscribeToEvents(subscribeEventCallback);
-				jQuery('#main').show();
+				// jQuery('#main').show();    hide the gadget initially
+				jQuery('#main').hide();
 			});
 		  }
 		  
@@ -68,8 +69,9 @@
 				jQuery('#noEvent').show();
 				jQuery('#sendWS').hide();
 			  } else {
+			  // show the gadget only for owner
+			  jQuery('#main').show();
 				selectedEvent = calendarEvent;
-				
 				// Get user preferences to know if an event has already been submitted
 				var prefs = new gadgets.Prefs();
 				var sentEventsList = prefs.getArray("sentEventsList");
@@ -90,7 +92,6 @@
 				
 				//populates attendees list
 				var slct = jQuery('#_attList');
-				var extatt = 0;
 				slct.html('');
 				var unwantedDomains = prefs.getString('unwantedDomains');
 				if(!unwantedDomains) unwantedDomains = '';
@@ -111,21 +112,8 @@
 						}
 						if(expludeAttendee){ continue; }
 						slct.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
-						extatt++;
 					}
 				}
-				
-				//show attendee dropdown only for more than 1 external attendee
-				if (extatt > 1) {
-					alert('exatt gt 1  ' + extatt );
-					jQuery('#_attendeeDWLabel').show();
-					jQuery('#attendeeDW').show();
-				else
-					alert('exatt le 1  '+ extatt);
-					jQuery('#_attendeeDWLabel').hide();
-					jQuery('#attendeeDW').hide();
-				}
-				
 			  }
 			}
 			
