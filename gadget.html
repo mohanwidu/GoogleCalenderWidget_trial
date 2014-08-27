@@ -108,7 +108,7 @@
 				var selOpt1 = config.ddOneOptions;
 				if (!selOpt1) { selOpt1 = [] ;}
 				for(var a = 0; a < selOpt1.length; a++) {
-					slct1.append(jQuery("<option value=\"" + selOpt1[a] + "\">"  + "</option>"));
+					slct1.append(jQuery("<option value=\"" + selOpt1[a] + "\">" + selOpt1[a] + "</option>"));
 				}
 				
 				//populates 2nd dropdown
@@ -117,7 +117,7 @@
 				var selOpt2 = config.ddTwoOptions;
 				if (!selOpt2) { selOpt2 = [] ;}
 				for(var b = 0; b < selOpt2.length; b++) {
-					slct2.append(jQuery("<option value=\"" + selOpt2[b] + "\">" + "</option>"));
+					slct2.append(jQuery("<option value=\"" + selOpt2[b] + "\">" + selOpt2[b]+ "</option>"));
 				}
 				
 				//populates attendees list
