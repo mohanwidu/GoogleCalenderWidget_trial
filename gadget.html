@@ -83,7 +83,7 @@
 				jQuery('#sendWS').hide();
 			  } else {
 				selectedEvent = calendarEvent;
-				gadgets.adjustHeight(500);
+				gadgets.window.adjustHeight(500);
 				// Get user preferences to know if an event has already been submitted
 				var prefs = new gadgets.Prefs();
 				var sentEventsList = prefs.getArray("sentEventsList");
