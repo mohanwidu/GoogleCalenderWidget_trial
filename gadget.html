@@ -7,10 +7,8 @@
 		<Require feature="google.calendar-0.5.read"/>
 	</ModulePrefs>
 	<UserPref name="sentEventsList" datatype="hidden" />
-	<UserPref name="unwantedDomains" datatype="hidden" />
 	<UserPref name="wsEndpoint" datatype="hidden"  default_value="https://requestb.in/13bcwvx1"/>
-	<UserPref name="ddOne_Options" datatype="hidden"  />
-	<UserPref name="ddTwo_Options" datatype="hidden"  />
+	
 	
 	<Content type="html">
 <![CDATA[    
@@ -127,9 +125,9 @@
 				var slct3 = jQuery('#_attList');
 				slct3.html('');
 				extAttendee = 0;
-				var unwantedDomains = config.unwantedDomains;
-				if(!unwantedDomains) { unwantedDomains = []; }
-				var domanis = unwantedDomains.split(/\s*,\s*/);
+				var domanis = config.extDomains;
+				if(!domanis) { domanis = []; }
+				//var domanis = unwantedDomains.split(/\s*,\s*/);
 				if(!calendarEvent.attendees || !calendarEvent.attendees.length){
 					slct3.append(jQuery('<option/>').text('No attendee').val(''));
 				}else{
