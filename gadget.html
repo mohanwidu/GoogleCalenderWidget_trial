@@ -52,7 +52,6 @@
 	<script src="https://mohanwidu.github.io/config.js"></script>
 	<script>
 		
-		console.log(JSON.stringify(config));
 		var calendar = null;  // make our service object global for later
 		var selectedEvent = null;
 		  // Load the JS library and try to fetch data once it's ready
@@ -84,7 +83,7 @@
 				jQuery('#sendWS').hide();
 			  } else {
 				selectedEvent = calendarEvent;
-				
+				gadgets.adjustHeight(500);
 				// Get user preferences to know if an event has already been submitted
 				var prefs = new gadgets.Prefs();
 				var sentEventsList = prefs.getArray("sentEventsList");
