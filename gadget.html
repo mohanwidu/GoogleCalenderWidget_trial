@@ -145,13 +145,13 @@
 						slct3.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
 						extAttendee++;
 					}
-					//if(extAttendee > 1){
-					//jQuery('#_selectAttDWLabel').show();
-					//jQuery('#_attList').show();
-					//}else{
-					//jQuery('#_selectAttDWLabel').hide();
-					//jQuery('#_attList').hide();
-					//}
+					if(extAttendee > 2){
+					jQuery('#_selectAttDWLabel').show();
+					jQuery('#_attList').show();
+					}else{
+					jQuery('#_selectAttDWLabel').hide();
+					jQuery('#_attList').hide();
+					}
 				}
 			  }
 			}
