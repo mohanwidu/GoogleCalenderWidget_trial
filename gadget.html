@@ -191,7 +191,7 @@
 			var wsEndpoint = prefs.getString("wsEndpoint");
 			makePOSTRequest(wsEndpoint, sendObj);
 			
-		  };
+		  }
 		  /*
 			Makes a post request
 		  */
@@ -203,7 +203,7 @@
 			   jQuery('#loading').show();
 				jQuery('#main').hide();
 			   gadgets.io.makeRequest(url, response, params); 
-			};
+			}
 			
 			
 			/*
@@ -230,7 +230,7 @@
 				jQuery('#_sendWSBtn').hide();
 				jQuery('#_reSendWSBtn').show();
 				
-			};
+			}
 		  
 			//load gadget
 		  gadgets.util.registerOnLoadHandler(initGadget);
