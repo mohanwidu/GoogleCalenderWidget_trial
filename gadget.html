@@ -54,6 +54,8 @@
 		
 		var calendar = null;  // make our service object global for later
 		var selectedEvent = null;
+		var maxwidth = 0;
+		var maxheight = 0;
 				
 		  // Load the JS library and try to fetch data once it's ready
 		  function initGadget() {  
@@ -71,10 +73,10 @@
 				if (gadgets.window) {
 				  var viewport = gadgets.window.getViewportDimensions();
 				  if (viewport.width) {
-					var maxwidth = viewport.width;
+					maxwidth = viewport.width;
 				  }
 				  if (viewport.height) {
-					var maxheight = viewport.height;
+				    maxheight = viewport.height;
 				  }
 				}
 				viewport.width = 0;
@@ -102,6 +104,9 @@
 				
 				//maximize the gadget only for owner
 				gadgets.window.adjustHeight(500);
+				if (gadgets.window) {
+				  var viewport = gadgets.window.getViewportDimensions();
+				  }
 				viewport.width = maxwidth;
 				viewport.height = maxheight;
 				
