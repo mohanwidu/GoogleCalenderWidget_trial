@@ -220,7 +220,7 @@
 			//Makes a post request
 		  
 			 //function makePOSTRequest() {
-			  	   $.ajax.get(wsEndpoint)
+			  	   $.get(wsEndpoint);
 				  /* function(sendObj,status) {
 						     alert('success' + status);
 							 $('#submitSuccess').html('submit success');
@@ -228,12 +228,6 @@
 						 	} ) */
 			//}
 			
-			$.ajaxSuccess(function() {
-			alert('Ajax success');
-			} );
-			$.ajaxError(function() {
-			alert('Ajax error');
-			} );
 			   // jQuery('#loading').show();
 				//jQuery('#main').hide();
 			  // gadgets.io.makeRequest(url, response, params); 
