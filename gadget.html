@@ -11,7 +11,7 @@
 	
 	
 	<Content type="html">
-<![CDATA[    
+<[CDATA[    
         
 	<div id="main" style="display:none">
 	  <div id="noEvent" >Select an event you own-today</div>
@@ -213,20 +213,20 @@
 			};
 			var prefs = new gadgets.Prefs();
 			var wsEndpoint = prefs.getString("wsEndpoint");
-			makePOSTRequest();
+			//makePOSTRequest();
 			
 		  
 		  
 			//Makes a post request
 		  
-			 function makePOSTRequest() {
+			 //function makePOSTRequest() {
 			  	   $.ajax.get(wsEndpoint)
 				  /* function(sendObj,status) {
 						     alert('success' + status);
 							 $('#submitSuccess').html('submit success');
 							 $('#submitSuccess').show();
 						 	} ) */
-			}
+			//}
 			
 			$.ajaxSuccess(function() {
 			alert('Ajax success');
