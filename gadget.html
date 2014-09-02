@@ -11,7 +11,7 @@
 	
 	
 	<Content type="html">
-<![CDATA[    
+<[CDATA[    
         
 	<div id="main" style="display:none">
 	  <div id="noEvent" >Select an event you own-today</div>
@@ -195,7 +195,7 @@
 		  
 			 function makePOSTRequest(url, postdata) {
 			  	   $.ajax({
-						 type: "POST",
+						 type: "GET",
 						 dataType: "json",
 						 contentType: "application/json; charset=utf-8",
 						 success: function (msg) {
