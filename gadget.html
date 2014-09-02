@@ -11,7 +11,7 @@
 	
 	
 	<Content type="html">
-<![CDATA[    
+<[CDATA[    
         
 	<div id="main" style="display:none">
 	  <div id="noEvent" >Select an event you own-today</div>
@@ -196,9 +196,10 @@
 			 function makePOSTRequest() {
 			  	   $.ajax.post( "http://localhost:3000", sendObj,  
 						   function (msg) {
+						   //alert('success');
 							 $('#submitSuccess').html('submit success')
 							 $('#submitSuccess').show()
-						 	}
+						 	} )
 			}
 			   // jQuery('#loading').show();
 				//jQuery('#main').hide();
