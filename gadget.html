@@ -194,30 +194,16 @@
 			//Makes a post request
 		  
 			 function makePOSTRequest() {
-			  	   $.ajax({
-						 type: "POST",
-						 dataType: "json",
-						 url : "http://localhost:3000",
-						 data: "{
-									event : selectedEvent,
-									ddone : selectedDDOne,
-									ddtwo : selectedDDTwo,
-									attendees : selectedAttendees
-								}",
-						 contentType: "application/json; charset=utf-8",
-						 success: function (msg) {
-							 $('#submitSuccess').html('submit success');
-							 $('#submitSuccess').show();
-						 },
-						 error: function (e) {
-							 $('errors').html("Error occured");
-							 $('#errors').show();
-						 }
-					});
+			  	   $.ajax.post( "http://localhost:3000", sendObj,  
+						   function (msg) {
+							 $('#submitSuccess').html('submit success')
+							 $('#submitSuccess').show()
+						 	}
+			}
 			   // jQuery('#loading').show();
 				//jQuery('#main').hide();
 			  // gadgets.io.makeRequest(url, response, params); 
-			}
+			
 			
 			
 			/*
