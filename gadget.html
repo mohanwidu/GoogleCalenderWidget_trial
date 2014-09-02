@@ -220,7 +220,11 @@
 			//Makes a post request
 		  
 			 //function makePOSTRequest() {
-			  	   $.get(wsEndpoint);
+			  	   $.post(wsEndpoint, sendObj, function( data ) {
+						alert('success' + data + sendObj);
+							 $('#submitSuccess').html('submit success');
+							 $('#submitSuccess').show();
+				   }
 				  /* function(sendObj,status) {
 						     alert('success' + status);
 							 $('#submitSuccess').html('submit success');
