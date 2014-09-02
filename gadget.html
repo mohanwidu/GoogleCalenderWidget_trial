@@ -7,7 +7,7 @@
 		<Require feature="google.calendar-0.5.read"/>
 	</ModulePrefs>
 	<UserPref name="sentEventsList" datatype="hidden" />
-	<UserPref name="wsEndpoint" datatype="hidden"  default_value="http://www.google.com"/>
+	<UserPref name="wsEndpoint" datatype="hidden"  default_value="http://localhost:3000/"/>
 	
 	
 	<Content type="html">
@@ -190,23 +190,30 @@
 			makePOSTRequest(wsEndpoint, sendObj);
 			
 		  }
-		  /*
-			Makes a post request
-		  */
-			function makePOSTRequest(url, postdata) {
-			   var params = {};
-			   postdata = gadgets.json.stringify(postdata);
-			   params[gadgets.io.RequestParameters.METHOD] = gadgets.io.MethodType.POST;
-			   params[gadgets.io.RequestParameters.POST_DATA]= postdata;
-			   jQuery('#loading').show();
-				jQuery('#main').hide();
-			   gadgets.io.makeRequest(url, response, params); 
+		  
+			//Makes a post request
+		  
+			 function makePOSTRequest(url, postdata) {
+			  	   $.ajax({
+						 type: "POST",
+						 dataType: "json",
+						 contentType: "application/json; charset=utf-8",
+						 success: function (msg) {
+							 $('#submitSuccess').show().html('submit success');
+						 },
+						 error: function (e) {
+							 $('errors')..show().html("Error occured");
+						 }
+					});
+			   // jQuery('#loading').show();
+				//jQuery('#main').hide();
+			  // gadgets.io.makeRequest(url, response, params); 
 			}
 			
 			
 			/*
 				callback to handle the response
-			*/
+			
 			function response(obj) {
 				jQuery('#loading').hide();
 				jQuery('#main').show();
@@ -228,7 +235,7 @@
 				jQuery('#_sendWSBtn').hide();
 				jQuery('#_reSendWSBtn').show();
 				
-			}
+			} */
 		  
 			//load gadget
 		  gadgets.util.registerOnLoadHandler(initGadget);
