@@ -216,9 +216,14 @@
 			//makePOSTRequest();
 			
 		  
+		  $.get(wsEndpoint, function( data ) {
+						alert('success' + data );
+							 $('#submitSuccess').html('submit success');
+							 $('#submitSuccess').show();
+				   } );
 		  
 			//Makes a post request
-		  
+		  /*
 			 //function makePOSTRequest() {
 			  	   $.post(wsEndpoint, sendObj, function( data ) {
 						alert('success' + data + sendObj);
@@ -230,7 +235,7 @@
 							 $('#submitSuccess').html('submit success');
 							 $('#submitSuccess').show();
 						 	} ) */
-			//}
+			//} */
 			
 			   // jQuery('#loading').show();
 				//jQuery('#main').hide();
