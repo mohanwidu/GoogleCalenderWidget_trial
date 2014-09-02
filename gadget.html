@@ -7,7 +7,7 @@
 		<Require feature="google.calendar-0.5.read"/>
 	</ModulePrefs>
 	<UserPref name="sentEventsList" datatype="hidden" />
-	<UserPref name="wsEndpoint" datatype="hidden"  default_value="http://localhost:3000/"/>
+	<UserPref name="wsEndpoint" datatype="hidden"  default_value="http://localhost:3000"/>
 	
 	
 	<Content type="html">
@@ -187,16 +187,23 @@
 			};
 			var prefs = new gadgets.Prefs();
 			var wsEndpoint = prefs.getString("wsEndpoint");
-			makePOSTRequest(wsEndpoint, sendObj);
+			makePOSTRequest();
 			
 		  }
 		  
 			//Makes a post request
 		  
-			 function makePOSTRequest(url, postdata) {
+			 function makePOSTRequest() {
 			  	   $.ajax({
-						 type: "GET",
+						 type: "POST",
 						 dataType: "json",
+						 url : "http://localhost:3000",
+						 data: "{
+									event : selectedEvent,
+									ddone : selectedDDOne,
+									ddtwo : selectedDDTwo,
+									attendees : selectedAttendees
+								}",
 						 contentType: "application/json; charset=utf-8",
 						 success: function (msg) {
 							 $('#submitSuccess').html('submit success');
