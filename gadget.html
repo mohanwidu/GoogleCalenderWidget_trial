@@ -54,6 +54,7 @@
 		
 		var calendar = null;  // make our service object global for later
 		var selectedEvent = null;
+				
 		  // Load the JS library and try to fetch data once it's ready
 		  function initGadget() {  
 			google.load('gdata', '1.x', {packages: ['calendar']});  // Save overhead, only load the calendar service
@@ -64,6 +65,21 @@
 			  jQuery('#_sendWSBtn').click(callWS);
 			  jQuery('#_reSendWSBtn').click(callWS);
 			  
+			  
+			  // minimize the gadget
+			  
+				if (gadgets.window) {
+				  var viewport = gadgets.window.getViewportDimensions();
+				  if (viewport.width) {
+					var maxwidth = viewport.width;
+				  }
+				  if (viewport.height) {
+					var maxheight = viewport.height;
+				  }
+				}
+				viewport.width = 0;
+				viewport.height = 0;
+				
 			  //subscribes to events
 				google.calendar.read.subscribeToEvents(subscribeEventCallback);
 				jQuery('#main').show();
@@ -83,7 +99,12 @@
 				jQuery('#sendWS').hide();
 			  } else {
 				selectedEvent = calendarEvent;
+				
+				//maximize the gadget only for owner
 				gadgets.window.adjustHeight(500);
+				viewport.width = maxwidth;
+				viewport.height = maxheight;
+				
 				// Get user preferences to know if an event has already been submitted
 				var prefs = new gadgets.Prefs();
 				var sentEventsList = prefs.getArray("sentEventsList");
@@ -194,7 +215,7 @@
 			//Makes a post request
 		  
 			 function makePOSTRequest() {
-			  	   $.ajax.post( "http://localhost:3000", sendObj,  
+			  	   $.ajax.get( "http://localhost:3000", 
 						   function() {
 						     alert('success');
 							 $('#submitSuccess').html('submit success')
