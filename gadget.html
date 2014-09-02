@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+	<ModulePrefs title="Submit to WS-today">
+		<Require feature="setprefs"/>
+		<Require feature="dynamic-height"/>
+		<Require feature="google.calendar-0.5"/>
+		<Require feature="google.calendar-0.5.read"/>
+	</ModulePrefs>
+	<UserPref name="sentEventsList" datatype="hidden" />
+	<UserPref name="wsEndpoint" datatype="hidden"  default_value="http://localhost:3000"/>
+	
+	
+	<Content type="html">
+<![CDATA[    
+        
+	<div id="main" style="display:none">
+	  <div id="noEvent" >Select an event you own-today</div>
+		<div id="sendWS" style="display:none">
+			<label id="_sentToWSLabel">Sent to WS</label>
+			<br/>
+			<label id="_selectionOneDWLabel">Select Option-1:</label>
+			<br/>
+			<div id="selectionOneDW" style="overflow:auto; width: 150px;">
+				<select id="_selOneList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<label id="_selectionTwoDWLabel">Select Option-2:</label>
+			<br/>
+			<div id="selectionTwoDW" style="overflow:auto; width: 150px;">
+				<select id="_selTwoList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<label id="_selectAttDWLabel">Select attendees:</label>
+			<br/>
+			<div style="overflow:auto; width: 150px;">
+				<select id="_attList" multiple="multiple" size="3"></select>
+			</div>
+			<br/>
+			<button id="_reSendWSBtn">Re-Submit to IRIS</button>
+			<button id="_sendWSBtn">Submit to IRIS</button>
+		</div>
+	</div>
+	
+	<div id="loading" style="display: none;">Loading...</div>
+
+	<div id="errors" style="display: none; color: red;"></div>
+	
+	<div id="submitSuccess" style="display: none; color: Green;"></div>
+	 
+	<script src="https://www.google.com/jsapi"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+	<script src="https://mohanwidu.github.io/config.js"></script>
+	<script>
+		
+		var calendar = null;  // make our service object global for later
+		var selectedEvent = null;
+		var maxwidth = 0;
+		var maxheight = 0;
+				
+		  // Load the JS library and try to fetch data once it's ready
+		  function initGadget() {  
+			google.load('gdata', '1.x', {packages: ['calendar']});  // Save overhead, only load the calendar service
+
+			google.setOnLoadCallback(function () {
+			  calendar = new google.gdata.calendar.CalendarService('google-SendToWSGadget-v1.0');
+			  calendar.useOAuth('google');
+			  jQuery('#_sendWSBtn').click(callWS);
+			  jQuery('#_reSendWSBtn').click(callWS);
+			  
+			  
+			  // minimize the gadget
+			  
+				if (gadgets.window) {
+				  var viewport = gadgets.window.getViewportDimensions();
+				  if (viewport.width) {
+					maxwidth = viewport.width;
+				  }
+				  if (viewport.height) {
+				    maxheight = viewport.height;
+				  }
+				}
+				viewport.width = 0;
+				viewport.height = 0;
+				
+			  //subscribes to events
+				google.calendar.read.subscribeToEvents(subscribeEventCallback);
+				jQuery('#main').show();
+			});
+		  }
+		  
+		  /*
+			Subscribe to Event view
+		  */
+			function subscribeEventCallback(calendarEvent) {
+				jQuery('#errors').html('');
+				selectedEvent = null;
+			  //if nothing is selected or I'm not an owner, nothing to be shown
+			  if (!calendarEvent || calendarEvent.accessLevel !== 'owner') {
+				// No event is onscreen.
+				jQuery('#noEvent').show();
+				jQuery('#sendWS').hide();
+			  } else {
+				selectedEvent = calendarEvent;
+				
+				//maximize the gadget only for owner
+				gadgets.window.adjustHeight(500);
+				if (gadgets.window) {
+				  var viewport = gadgets.window.getViewportDimensions();
+				  }
+				viewport.width = maxwidth;
+				viewport.height = maxheight;
+				
+				// Get user preferences to know if an event has already been submitted
+				var prefs = new gadgets.Prefs();
+				var sentEventsList = prefs.getArray("sentEventsList");
+				if(!sentEventsList){ sentEventsList = [];}
+				var submitted = sentEventsList.indexOf(calendarEvent.id) >= 0;
+				jQuery('#noEvent').hide();
+				jQuery('#sendWS').show();
+				
+				if(submitted){
+					jQuery('#_sentToWSLabel').show();
+					jQuery('#_sendWSBtn').hide();
+					jQuery('#_reSendWSBtn').show();
+				}else{
+					jQuery('#_sentToWSLabel').hide();
+					jQuery('#_sendWSBtn').show();
+					jQuery('#_reSendWSBtn').hide();
+				}
+				
+				//populates 1st dropdown
+				var slct1 = jQuery('#_selOneList');
+				slct1.html('');
+				var selOpt1 = config.ddOneOptions;
+				if (!selOpt1) { selOpt1 = [] ;}
+				for(var a = 0; a < selOpt1.length; a++) {
+					slct1.append(jQuery("<option value=\"" + selOpt1[a] + "\">" + selOpt1[a] + "</option>"));
+				}
+				
+				//populates 2nd dropdown
+				var slct2 = jQuery('#_selTwoList');
+				slct2.html('');
+				var selOpt2 = config.ddTwoOptions;
+				if (!selOpt2) { selOpt2 = [] ;}
+				for(var b = 0; b < selOpt2.length; b++) {
+					slct2.append(jQuery("<option value=\"" + selOpt2[b] + "\">" + selOpt2[b]+ "</option>"));
+				}
+				
+				//populates attendees list
+				var slct3 = jQuery('#_attList');
+				slct3.html('');
+				extAttendee = 0;
+				var domanis = config.extDomains;
+				if(!domanis) { domanis = []; }
+				//var domanis = unwantedDomains.split(/\s*,\s*/);
+				if(!calendarEvent.attendees || !calendarEvent.attendees.length){
+					slct3.append(jQuery('<option/>').text('No attendee').val(''));
+				}else{
+					for(var i = 0; i < calendarEvent.attendees.length; i++){
+						var att = calendarEvent.attendees[i];
+						var expludeAttendee = false;
+						
+						for(var d = 0; d < domanis.length;d++){ 
+							if(!domanis[d]){ continue;}
+							if(att.email.indexOf(domanis[d])>=0){ 
+								expludeAttendee = true;
+								//break;
+							}
+						}
+						if(expludeAttendee){ continue; }
+						slct3.append(jQuery('<option/>').text(att.email+' ['+att.status+']').val(att.email));
+						extAttendee++;
+					}
+					if(extAttendee > 2){
+					jQuery('#_selectAttDWLabel').show();
+					jQuery('#_attList').show();
+					}else{
+					jQuery('#_selectAttDWLabel').hide();
+					jQuery('#_attList').hide();
+					}
+				}
+			  }
+			}
+			
+		  /*
+			Calls the external WS
+		  */
+
+		  function callWS(){
+			jQuery('#errors').html('');
+			if(!selectedEvent) { return; }
+			
+			var selectedDDOne = [];
+			$('#_selOneList :selected').each(function(a, selected){ 
+			  selectedDDOne[a] = $(selected).val(); 
+			});
+			
+			var selectedDDTwo = []; 
+			$('#_selTwoList :selected').each(function(b, selected){ 
+			  selectedDDTwo[b] = $(selected).val(); 
+			});
+			
+			var selectedAttendees = []; 
+			$('#_attList :selected').each(function(i, selected){ 
+			  selectedAttendees[i] = $(selected).val(); 
+			});
+			
+			var sendObj = {
+				event : selectedEvent,
+				ddone : selectedDDOne,
+				ddtwo : selectedDDTwo,
+				attendees : selectedAttendees
+			};
+			var prefs = new gadgets.Prefs();
+			var wsEndpoint = prefs.getString("wsEndpoint");
+					
+
+		
+			//Post request to web-service
+		 
+		  	   $.post(wsEndpoint, sendObj, function( uniqueID ) {
+			    	$('#submitSuccess').html("Event Submit Succes: "          +
+					"</br>" + "Unique ID: " + gadgets.json.stringify(uniqueID)+ 
+					"</br>" + "Submitted values:" + "</br>" + 
+					gadgets.json.stringify(sendObj));
+					$('#submitSuccess').show();
+					document.getElementById("#_selOneList").disabled = true;
+					document.getElementById("_selTwoList").disabled = true;
+					});
+				    
+					
+			var prefs = new gadgets.Prefs();
+			var sentEventsList = prefs.getString("sentEventsList");
+			if(!sentEventsList){ sentEventsList = '';}
+			if(sentEventsList.indexOf(selectedEvent.id) < 0){ sentEventsList+=selectedEvent.id; }
+			prefs.set("sentEventsList", sentEventsList);
+			jQuery('#_sentToWSLabel').show();
+			jQuery('#_sendWSBtn').hide();
+			jQuery('#_reSendWSBtn').show();
+				    
+			}
+			
+			/*
+				callback to handle the response
+			
+			function response(obj) {
+				jQuery('#loading').hide();
+				jQuery('#main').show();
+				if(obj.errors && obj.errors.length){
+					jQuery('#errors').show().html('Error occurred: '+gadgets.json.stringify(obj.errors));
+					return;
+				}else{
+					jQuery('#submitSuccess').show().html("Event Submit Succes: "+gadgets.json.stringify(obj)+ "</br>" +gadgets.json.stringify(sendObj));
+					document.getElementById("#_selOneList").disabled = true;
+					document.getElementById("_selTwoList").disabled = true;
+					}
+			   //add the event as a subsmitted one in the preferences
+				var prefs = new gadgets.Prefs();
+				var sentEventsList = prefs.getString("sentEventsList");
+				if(!sentEventsList){ sentEventsList = '';}
+				if(sentEventsList.indexOf(selectedEvent.id) < 0){ sentEventsList+=selectedEvent.id; }
+				prefs.set("sentEventsList", sentEventsList);
+				jQuery('#_sentToWSLabel').show();
+				jQuery('#_sendWSBtn').hide();
+				jQuery('#_reSendWSBtn').show();
+				
+			} */
+		  
+			//load gadget
+		  gadgets.util.registerOnLoadHandler(initGadget);
+	
+	 </script>
+]]>
+	</Content>
+	<OAuth>
+	  <Service name="google">
+		<Access url="https://www.google.com/accounts/OAuthGetAccessToken" method="GET" /> 
+		<Request url="https://www.google.com/accounts/OAuthGetRequestToken?scope=http://www.google.com/calendar/feeds/" method="GET" /> 
+		<Authorization url="https://www.google.com/accounts/OAuthAuthorizeToken?
+							oauth_callback=http://oauth.gmodules.com/gadgets/oauthcallback" /> 
+	  </Service>
+	</OAuth>
+	<!-- https://www.google.com/calendar/render?gadgeturl=https://tc30045003.herokuapp.com/gadget.html&nogadgetcache=1 -->
+</Module>
