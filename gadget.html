@@ -89,7 +89,11 @@
 		  }
 		  
 		  /*
+<<<<<<< HEAD
 			Subscribe to Event view .
+=======
+			Subscribe to Event view
+>>>>>>> 02dee6b1ef8e13fb8ec0bc970359b48a8ac50dd6
 		  */
 			function subscribeEventCallback(calendarEvent) {
 				jQuery('#errors').html('');
@@ -213,6 +217,7 @@
 			};
 			var prefs = new gadgets.Prefs();
 			var wsEndpoint = prefs.getString("wsEndpoint");
+<<<<<<< HEAD
 					
 
 		
@@ -238,6 +243,36 @@
 			jQuery('#_sendWSBtn').hide();
 			jQuery('#_reSendWSBtn').show();
 				    
+=======
+			//makePOSTRequest();
+			
+		  
+		  $.get(wsEndpoint, function( data ) {
+						alert('success' + data );
+							 $('#submitSuccess').html('submit success');
+							 $('#submitSuccess').show();
+				   } );
+		  
+			//Makes a post request
+		  /*
+			 //function makePOSTRequest() {
+			  	   $.post(wsEndpoint, sendObj, function( data ) {
+						alert('success' + data + sendObj);
+							 $('#submitSuccess').html('submit success');
+							 $('#submitSuccess').show();
+				   } );
+				  /* function(sendObj,status) {
+						     alert('success' + status);
+							 $('#submitSuccess').html('submit success');
+							 $('#submitSuccess').show();
+						 	} ) */
+			//} */
+			
+			   // jQuery('#loading').show();
+				//jQuery('#main').hide();
+			  // gadgets.io.makeRequest(url, response, params); 
+			
+>>>>>>> 02dee6b1ef8e13fb8ec0bc970359b48a8ac50dd6
 			}
 			
 			/*
