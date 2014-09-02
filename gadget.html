@@ -195,8 +195,8 @@
 		  
 			 function makePOSTRequest() {
 			  	   $.ajax.post( "http://localhost:3000", sendObj,  
-						   function (msg) {
-						   //alert('success');
+						   function() {
+						     alert('success');
 							 $('#submitSuccess').html('submit success')
 							 $('#submitSuccess').show()
 						 	} )
